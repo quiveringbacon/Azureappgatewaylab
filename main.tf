@@ -276,15 +276,6 @@ resource "azurerm_key_vault" "certkv" {
   }
 }
 
-#log analytics workspace
-resource "azurerm_log_analytics_workspace" "LAW" {
-  name                = "LAW-01"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-  
-}
-
-
 #vnets and subnets
 resource "azurerm_virtual_network" "hub-vnet" {
   address_space       = ["10.0.0.0/16"]
