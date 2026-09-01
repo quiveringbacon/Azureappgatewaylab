@@ -254,7 +254,7 @@ resource "azurerm_key_vault" "certkv" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   #soft_delete_retention_days  = 7
   #purge_protection_enabled    = false
-
+  rbac_authorization_enabled = false
   sku_name = "standard"
 
   access_policy {
@@ -414,6 +414,22 @@ resource "azurerm_public_ip" "spokevm-pip" {
   }
   
 }
+resource "azurerm_public_ip" "PIP" {
+  count               = 2
+  name                = "nginxpip-${count.index}"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+  allocation_method = "Static"
+  sku = "Standard"
+  timeouts {
+    create = "2h"
+    read = "2h"
+    update = "2h"
+    delete = "2h"
+  }
+  
+}
+
 data "azurerm_key_vault_secret" "secret1" {
   key_vault_id = azurerm_key_vault.certkv.id
   name = "secret1"
