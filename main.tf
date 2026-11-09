@@ -582,7 +582,7 @@ resource "azurerm_linux_virtual_machine" "webvm" {
   
 }
 
-#Install Nginx
+# Install Nginx with a clean, signed Ubuntu APT source list.
 resource "azurerm_virtual_machine_extension" "vm_extension" {
   count                = 2
   name                 = "Nginx"
@@ -593,7 +593,7 @@ resource "azurerm_virtual_machine_extension" "vm_extension" {
 
   settings = <<SETTINGS
  {
-  "commandToExecute": "sudo apt-get update && sudo apt-get install nginx -y && echo '<h1>NGINX webserver-${count.index} is running</h1>' > /var/www/html/index.html && sudo systemctl restart nginx"
+  "commandToExecute": "sudo bash -lc 'mkdir -p /var/lib/apt/lists/partial && chmod 755 /var/lib/apt/lists /var/lib/apt/lists/partial && cat > /etc/apt/sources.list <<\"EOF\"\ndeb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse\ndeb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse\ndeb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse\ndeb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] https://archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse\nEOF\napt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y nginx && printf \"<h1>NGINX webserver-${count.index} is running</h1>\\\\n\" > /var/www/html/index.html && systemctl restart nginx'"
  }
 SETTINGS
 
